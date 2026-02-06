@@ -1,0 +1,354 @@
+:root {
+  color-scheme: dark;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  --bg: #0b0c10;
+  --bg-alt: #12131b;
+  --card: #171925;
+  --card-soft: #1f2130;
+  --text: #f5f7ff;
+  --muted: #a7adc2;
+  --primary: #64f0c8;
+  --primary-strong: #2cd7ae;
+  --accent: #ffb347;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 30px 80px rgba(6, 7, 14, 0.45);
+}
+
+body[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f4ee;
+  --bg-alt: #f0ede6;
+  --card: #ffffff;
+  --card-soft: #f5f3ee;
+  --text: #1b1e2d;
+  --muted: #5f677a;
+  --primary: #2b5cff;
+  --primary-strong: #173fdb;
+  --accent: #ff7a59;
+  --border: rgba(0, 0, 0, 0.1);
+  --shadow: 0 24px 60px rgba(38, 35, 24, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, rgba(100, 240, 200, 0.15), transparent 45%),
+    var(--bg);
+  color: var(--text);
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(0px);
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  animation: float 18s ease-in-out infinite;
+}
+
+.orb-a {
+  width: 320px;
+  height: 320px;
+  top: -80px;
+  left: -40px;
+  background: radial-gradient(circle, rgba(100, 240, 200, 0.8), transparent 65%);
+}
+
+.orb-b {
+  width: 420px;
+  height: 420px;
+  bottom: -160px;
+  right: -120px;
+  animation-delay: -6s;
+  background: radial-gradient(circle, rgba(255, 179, 71, 0.5), transparent 70%);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.1;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(20px, -12px, 0);
+  }
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px clamp(24px, 6vw, 72px);
+}
+
+.brand {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.brand-mark {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 24px;
+  font-weight: 600;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0;
+}
+
+p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: grid;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.control-group input,
+.control-group select,
+textarea {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+textarea {
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+}
+
+main {
+  display: grid;
+  gap: 28px;
+  padding: 0 clamp(24px, 6vw, 72px) 72px;
+}
+
+.panel {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent 50%),
+    var(--bg-alt);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  animation: rise 0.8s ease both;
+}
+
+.panel.info {
+  padding: 24px 28px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.segmented {
+  display: flex;
+  background: var(--card);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+
+.segment {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.segment.active {
+  background: var(--primary);
+  color: #0b0c10;
+}
+
+.chain {
+  display: grid;
+  gap: 8px;
+}
+
+.io-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.io-card {
+  background: var(--card);
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.io-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(100, 240, 200, 0.25);
+}
+
+.io-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.io-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+button,
+label.file {
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button.primary {
+  background: var(--primary);
+  color: #0b0c10;
+  padding: 10px 18px;
+  box-shadow: 0 12px 30px rgba(100, 240, 200, 0.28);
+}
+
+button.ghost,
+label.file {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+}
+
+label.file input {
+  display: none;
+}
+
+.hint {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.hidden {
+  display: none;
+}
+
+.inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

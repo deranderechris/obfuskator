@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Obfuskator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="dark">
+    <div class="ambient">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="grid"></div>
+    </div>
+
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">O</div>
+        <div>
+          <h1>Obfuskator</h1>
+          <p data-i18n="tagline">Obfuscate and deobfuscate in seconds</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="language" data-i18n="language">Language</label>
+          <select id="language">
+            <option value="de">DE</option>
+            <option value="en">EN</option>
+            <option value="it">IT</option>
+          </select>
+        </div>
+        <button id="theme-toggle" class="ghost" type="button" data-i18n="themeDark">
+          Dark
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 data-i18n="obfuscateTitle">Obfuscate</h2>
+            <p data-i18n="obfuscateSubtitle">
+              Encode or encrypt source text into a shareable payload.
+            </p>
+          </div>
+          <div class="panel-actions">
+            <button id="obf-run" class="primary" type="button" data-i18n="run">
+              Run
+            </button>
+            <button id="obf-clear" class="ghost" type="button" data-i18n="clear">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="options">
+          <div class="control-group">
+            <label data-i18n="mode">Mode</label>
+            <div class="segmented">
+              <button class="segment active" data-mode="single" data-target="obf" type="button" data-i18n="single">
+                Single
+              </button>
+              <button class="segment" data-mode="chain" data-target="obf" type="button" data-i18n="chain">
+                Chain
+              </button>
+            </div>
+          </div>
+
+          <div class="control-group" id="obf-single">
+            <label for="obf-algo" data-i18n="algorithm">Algorithm</label>
+            <select id="obf-algo"></select>
+          </div>
+
+          <div class="control-group hidden" id="obf-chain">
+            <label data-i18n="chainOrder">Chain order</label>
+            <div class="chain">
+              <select class="chain-step" data-step="1"></select>
+              <select class="chain-step" data-step="2"></select>
+              <select class="chain-step" data-step="3"></select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="obf-xor" data-i18n="xorKey">XOR key</label>
+            <input id="obf-xor" type="text" placeholder="key" />
+          </div>
+
+          <div class="control-group">
+            <label for="obf-pass" data-i18n="aesPass">AES passphrase</label>
+            <input id="obf-pass" type="password" placeholder="passphrase" />
+          </div>
+        </div>
+
+        <div class="io-grid">
+          <div class="io-card" data-target="obf-input">
+            <div class="io-header">
+              <h3 data-i18n="input">Input</h3>
+              <div class="io-actions">
+                <label class="ghost file">
+                  <input id="obf-upload" type="file" />
+                  <span data-i18n="upload">Upload</span>
+                </label>
+                <button id="obf-paste" class="ghost" type="button" data-i18n="paste">
+                  Paste
+                </button>
+              </div>
+            </div>
+            <textarea id="obf-input" placeholder="Drop file or paste text..."></textarea>
+          </div>
+
+          <div class="io-card" data-target="obf-output">
+            <div class="io-header">
+              <h3 data-i18n="output">Output</h3>
+              <div class="io-actions">
+                <button id="obf-copy" class="ghost" type="button" data-i18n="copy">
+                  Copy
+                </button>
+                <button id="obf-download" class="ghost" type="button" data-i18n="download">
+                  Download
+                </button>
+              </div>
+            </div>
+            <textarea id="obf-output" readonly placeholder="Encrypted output..."></textarea>
+          </div>
+        </div>
+
+        <p class="hint" data-i18n="dropHint">
+          Drag and drop files into the input panel.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 data-i18n="deobfuscateTitle">Deobfuscate</h2>
+            <p data-i18n="deobfuscateSubtitle">
+              Decode or decrypt payloads back into readable source.
+            </p>
+          </div>
+          <div class="panel-actions">
+            <button id="deobf-run" class="primary" type="button" data-i18n="run">
+              Run
+            </button>
+            <button id="deobf-clear" class="ghost" type="button" data-i18n="clear">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="options">
+          <div class="control-group">
+            <label data-i18n="mode">Mode</label>
+            <div class="segmented">
+              <button class="segment active" data-mode="single" data-target="deobf" type="button" data-i18n="single">
+                Single
+              </button>
+              <button class="segment" data-mode="chain" data-target="deobf" type="button" data-i18n="chain">
+                Chain
+              </button>
+            </div>
+          </div>
+
+          <div class="control-group" id="deobf-single">
+            <label for="deobf-algo" data-i18n="algorithm">Algorithm</label>
+            <select id="deobf-algo"></select>
+          </div>
+
+          <div class="control-group hidden" id="deobf-chain">
+            <label data-i18n="chainOrder">Chain order</label>
+            <div class="chain">
+              <select class="chain-step" data-step="1"></select>
+              <select class="chain-step" data-step="2"></select>
+              <select class="chain-step" data-step="3"></select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="deobf-xor" data-i18n="xorKey">XOR key</label>
+            <input id="deobf-xor" type="text" placeholder="key" />
+          </div>
+
+          <div class="control-group">
+            <label for="deobf-pass" data-i18n="aesPass">AES passphrase</label>
+            <input id="deobf-pass" type="password" placeholder="passphrase" />
+          </div>
+
+          <div class="control-group">
+            <label class="inline">
+              <input id="deobf-reverse" type="checkbox" checked />
+              <span data-i18n="reverseOrder">Reverse order</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="io-grid">
+          <div class="io-card" data-target="deobf-input">
+            <div class="io-header">
+              <h3 data-i18n="input">Input</h3>
+              <div class="io-actions">
+                <label class="ghost file">
+                  <input id="deobf-upload" type="file" />
+                  <span data-i18n="upload">Upload</span>
+                </label>
+                <button id="deobf-paste" class="ghost" type="button" data-i18n="paste">
+                  Paste
+                </button>
+              </div>
+            </div>
+            <textarea id="deobf-input" placeholder="Drop file or paste text..."></textarea>
+          </div>
+
+          <div class="io-card" data-target="deobf-output">
+            <div class="io-header">
+              <h3 data-i18n="output">Output</h3>
+              <div class="io-actions">
+                <button id="deobf-copy" class="ghost" type="button" data-i18n="copy">
+                  Copy
+                </button>
+                <button id="deobf-download" class="ghost" type="button" data-i18n="download">
+                  Download
+                </button>
+              </div>
+            </div>
+            <textarea id="deobf-output" readonly placeholder="Decrypted output..."></textarea>
+          </div>
+        </div>
+
+        <p class="hint" data-i18n="dropHint">
+          Drag and drop files into the input panel.
+        </p>
+      </section>
+
+      <section class="panel info">
+        <h2 data-i18n="notesTitle">Notes</h2>
+        <ul>
+          <li data-i18n="note1">All processing runs locally in your browser.</li>
+          <li data-i18n="note2">AES-GCM output format: v1:base64(salt):base64(iv):base64(cipher).</li>
+          <li data-i18n="note3">Gzip uses modern browser APIs and may not work in older browsers.</li>
+        </ul>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
