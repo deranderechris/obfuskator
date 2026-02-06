@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obfuskator - Modern Text Obfuscation Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .method-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .method-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .method-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .method-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .method-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                min-width: 100%;
+            }
+
+            .method-selector {
+                flex-direction: column;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Obfuskator</h1>
+        <p class="subtitle">Modern Text Obfuscation Tool - Protect Your Text</p>
+
+        <div class="method-selector">
+            <button class="method-btn active" data-method="base64">Base64</button>
+            <button class="method-btn" data-method="reverse">Reverse</button>
+            <button class="method-btn" data-method="caesar">Caesar Cipher</button>
+            <button class="method-btn" data-method="hex">Hexadecimal</button>
+            <button class="method-btn" data-method="rot13">ROT13</button>
+        </div>
+
+        <div class="input-group">
+            <label for="inputText">Input Text:</label>
+            <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="obfuscate()">🔒 Obfuscate</button>
+            <button class="btn-primary" onclick="deobfuscate()">🔓 Deobfuscate</button>
+            <button class="btn-secondary" onclick="clearAll()">🗑️ Clear</button>
+            <button class="btn-secondary" onclick="copyOutput()">📋 Copy Output</button>
+        </div>
+
+        <div class="input-group">
+            <label for="outputText">Output Text:</label>
+            <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ About Obfuskator</h3>
+            <p>
+                Choose your obfuscation method and transform your text. 
+                This tool supports multiple encoding and encryption methods:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Base64:</strong> Standard encoding method</li>
+                <li><strong>Reverse:</strong> Simple text reversal</li>
+                <li><strong>Caesar Cipher:</strong> Classic shift cipher (shift by 3)</li>
+                <li><strong>Hexadecimal:</strong> Convert to hex representation</li>
+                <li><strong>ROT13:</strong> Letter substitution cipher</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        Made with ❤️ | <a href="https://github.com/deranderechris/obfuskator" target="_blank">GitHub</a>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentMethod = 'base64';
+
+        // Method selector
+        document.querySelectorAll('.method-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentMethod = this.dataset.method;
+            });
+        });
+
+        function obfuscate() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                showToast('⚠️ Please enter some text first!', '#ff9800');
+                return;
+            }
+
+            let output = '';
+            switch(currentMethod) {
+                case 'base64':
+                    output = btoa(unescape(encodeURIComponent(input)));
+                    break;
+                case 'reverse':
+                    output = input.split('').reverse().join('');
+                    break;
+                case 'caesar':
+                    output = caesarCipher(input, 3);
+                    break;
+                case 'hex':
+                    output = toHex(input);
+                    break;
+                case 'rot13':
+                    output = rot13(input);
+                    break;
+            }
+
+            document.getElementById('outputText').value = output;
+            showToast('✅ Text obfuscated successfully!', '#4caf50');
+        }
+
+        function deobfuscate() {
+            const input = document.getElementById('inputText').value;
+            if (!input) {
+                showToast('⚠️ Please enter some text first!', '#ff9800');
+                return;
+            }
+
+            let output = '';
+            try {
+                switch(currentMethod) {
+                    case 'base64':
+                        output = decodeURIComponent(escape(atob(input)));
+                        break;
+                    case 'reverse':
+                        output = input.split('').reverse().join('');
+                        break;
+                    case 'caesar':
+                        output = caesarCipher(input, -3);
+                        break;
+                    case 'hex':
+                        output = fromHex(input);
+                        break;
+                    case 'rot13':
+                        output = rot13(input); // ROT13 is its own inverse
+                        break;
+                }
+                document.getElementById('outputText').value = output;
+                showToast('✅ Text deobfuscated successfully!', '#4caf50');
+            } catch(e) {
+                showToast('❌ Invalid input for deobfuscation!', '#f44336');
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            showToast('🗑️ Cleared all text!', '#2196f3');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputText');
+            if (!output.value) {
+                showToast('⚠️ Nothing to copy!', '#ff9800');
+                return;
+            }
+            navigator.clipboard.writeText(output.value).then(() => {
+                showToast('📋 Copied to clipboard!', '#4caf50');
+            }).catch(() => {
+                // Fallback to older method if clipboard API fails
+                output.select();
+                document.execCommand('copy');
+                showToast('📋 Copied to clipboard!', '#4caf50');
+            });
+        }
+
+        function caesarCipher(text, shift) {
+            return text.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    const code = char.charCodeAt(0);
+                    const isUpperCase = code >= 65 && code <= 90;
+                    const base = isUpperCase ? 65 : 97;
+                    return String.fromCharCode(((code - base + shift + 26) % 26) + base);
+                }
+                return char;
+            }).join('');
+        }
+
+        function toHex(str) {
+            let result = '';
+            for (let i = 0; i < str.length; i++) {
+                result += str.charCodeAt(i).toString(16).padStart(2, '0');
+            }
+            return result;
+        }
+
+        function fromHex(hex) {
+            let str = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                str += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16));
+            }
+            return str;
+        }
+
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(char) {
+                const start = char <= 'Z' ? 65 : 97;
+                return String.fromCharCode(start + (char.charCodeAt(0) - start + 13) % 26);
+            });
+        }
+
+        function showToast(message, color) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = color;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                obfuscate();
+            } else if (e.ctrlKey && e.shiftKey && e.key === 'Enter') {
+                deobfuscate();
+            }
+        });
+    </script>
+</body>
+</html>
