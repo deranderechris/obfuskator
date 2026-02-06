@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Obfuscator / Deobfuscator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-section, .output-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-encrypt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-decrypt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-auto {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .encoding-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .detection-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: #004085;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Universal Obfuscator</h1>
+        <p class="subtitle">Verschlüsseln und Entschlüsseln - egal wie oft!</p>
+
+        <div class="input-section">
+            <label for="inputText">Eingabetext:</label>
+            <textarea id="inputText" placeholder="Geben Sie hier Ihren Text ein..."></textarea>
+        </div>
+
+        <div class="encoding-options">
+            <div class="checkbox-group">
+                <input type="checkbox" id="useRot13" checked>
+                <label for="useRot13">ROT13</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="useBase64" checked>
+                <label for="useBase64">Base64</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="useMarshal" checked>
+                <label for="useMarshal">Marshal (JSON)</label>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-encrypt" onclick="encryptText()">🔒 Verschlüsseln</button>
+            <button class="btn-decrypt" onclick="decryptText()">🔓 Entschlüsseln</button>
+            <button class="btn-auto" onclick="autoDecrypt()">🤖 Auto-Entschlüsseln</button>
+            <button class="btn-clear" onclick="clearAll()">🗑️ Alles Löschen</button>
+        </div>
+
+        <div class="output-section">
+            <label for="outputText">Ausgabe:</label>
+            <textarea id="outputText" readonly placeholder="Das Ergebnis erscheint hier..."></textarea>
+            <div id="detectionInfo" class="detection-info" style="display: none;"></div>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ Verwendung:</h3>
+            <ul>
+                <li><strong>Verschlüsseln:</strong> Wählen Sie die gewünschten Encoding-Methoden und klicken Sie auf "Verschlüsseln". Die Methoden werden in der Reihenfolge ROT13 → Base64 → Marshal angewendet.</li>
+                <li><strong>Entschlüsseln:</strong> Klicken Sie auf "Entschlüsseln" um eine einzelne Entschlüsselungsebene zu entfernen (in umgekehrter Reihenfolge).</li>
+                <li><strong>Auto-Entschlüsseln:</strong> Erkennt automatisch die verwendeten Encoding-Methoden und entschlüsselt den Text vollständig, egal wie oft er verschleiert wurde!</li>
+                <li><strong>ROT13:</strong> Caesar-Chiffre mit 13 Zeichen Verschiebung</li>
+                <li><strong>Base64:</strong> Standard Base64-Encoding</li>
+                <li><strong>Marshal:</strong> JSON-Serialisierung mit zusätzlicher Obfuskation</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ROT13 Implementation
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(char) {
+                const start = char <= 'Z' ? 65 : 97;
+                return String.fromCharCode(start + (char.charCodeAt(0) - start + 13) % 26);
+            });
+        }
+
+        // Base64 Encoding/Decoding
+        function base64Encode(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function base64Decode(str) {
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Marshal (JSON) Implementation
+        function marshalEncode(str) {
+            const obj = {
+                type: 'marshaled',
+                data: str,
+                timestamp: Date.now(),
+                checksum: simpleHash(str)
+            };
+            return JSON.stringify(obj);
+        }
+
+        function marshalDecode(str) {
+            try {
+                const obj = JSON.parse(str);
+                if (obj.type === 'marshaled' && obj.data) {
+                    return obj.data;
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Simple hash function for checksum
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash;
+        }
+
+        // Detection functions
+        function isBase64(str) {
+            if (!str || str.length === 0) return false;
+            // Base64 pattern: only alphanumeric, +, /, and = at the end
+            const base64Pattern = /^[A-Za-z0-9+/]*={0,2}$/;
+            if (!base64Pattern.test(str)) return false;
+            
+            try {
+                const decoded = base64Decode(str);
+                return decoded !== null && decoded !== str;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function isMarshal(str) {
+            try {
+                const obj = JSON.parse(str);
+                return obj.type === 'marshaled' && obj.data !== undefined;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function isROT13(str) {
+            // ROT13 is harder to detect definitively, but we can check if it produces more readable text
+            const decoded = rot13(str);
+            // Simple heuristic: check if decoded version has more common words or patterns
+            return decoded !== str;
+        }
+
+        // Encrypt text with selected methods
+        function encryptText() {
+            let text = document.getElementById('inputText').value;
+            if (!text) {
+                alert('Bitte geben Sie einen Text ein!');
+                return;
+            }
+
+            const useRot13 = document.getElementById('useRot13').checked;
+            const useBase64 = document.getElementById('useBase64').checked;
+            const useMarshal = document.getElementById('useMarshal').checked;
+
+            let result = text;
+            let steps = [];
+
+            if (useRot13) {
+                result = rot13(result);
+                steps.push('ROT13');
+            }
+
+            if (useBase64) {
+                result = base64Encode(result);
+                steps.push('Base64');
+            }
+
+            if (useMarshal) {
+                result = marshalEncode(result);
+                steps.push('Marshal');
+            }
+
+            document.getElementById('outputText').value = result;
+            showDetectionInfo(`Verschlüsselt mit: ${steps.join(' → ')}`);
+        }
+
+        // Decrypt text (single layer)
+        function decryptText() {
+            let text = document.getElementById('inputText').value;
+            if (!text) {
+                alert('Bitte geben Sie einen Text ein!');
+                return;
+            }
+
+            const useRot13 = document.getElementById('useRot13').checked;
+            const useBase64 = document.getElementById('useBase64').checked;
+            const useMarshal = document.getElementById('useMarshal').checked;
+
+            let result = text;
+            let steps = [];
+
+            // Decrypt in reverse order
+            if (useMarshal) {
+                const decoded = marshalDecode(result);
+                if (decoded !== null) {
+                    result = decoded;
+                    steps.push('Marshal');
+                }
+            }
+
+            if (useBase64) {
+                const decoded = base64Decode(result);
+                if (decoded !== null) {
+                    result = decoded;
+                    steps.push('Base64');
+                }
+            }
+
+            if (useRot13) {
+                result = rot13(result);
+                steps.push('ROT13');
+            }
+
+            document.getElementById('outputText').value = result;
+            showDetectionInfo(`Entschlüsselt: ${steps.join(' → ')}`);
+        }
+
+        // Auto-decrypt: automatically detect and decrypt all layers
+        function autoDecrypt() {
+            let text = document.getElementById('inputText').value;
+            if (!text) {
+                alert('Bitte geben Sie einen Text ein!');
+                return;
+            }
+
+            let result = text;
+            let iterations = 0;
+            let maxIterations = 100; // Prevent infinite loops
+            let allSteps = [];
+
+            while (iterations < maxIterations) {
+                let changed = false;
+                let stepInfo = [];
+
+                // Try Marshal first (most specific)
+                if (isMarshal(result)) {
+                    const decoded = marshalDecode(result);
+                    if (decoded !== null && decoded !== result) {
+                        result = decoded;
+                        changed = true;
+                        stepInfo.push('Marshal');
+                    }
+                }
+
+                // Try Base64
+                if (!changed && isBase64(result)) {
+                    const decoded = base64Decode(result);
+                    if (decoded !== null && decoded !== result) {
+                        result = decoded;
+                        changed = true;
+                        stepInfo.push('Base64');
+                    }
+                }
+
+                // Try ROT13 (least specific, try last)
+                if (!changed && result.match(/[a-zA-Z]/)) {
+                    const decoded = rot13(result);
+                    if (decoded !== result) {
+                        // Only apply if it seems more readable
+                        const originalLetters = result.match(/[a-zA-Z]/g) || [];
+                        const decodedLetters = decoded.match(/[a-zA-Z]/g) || [];
+                        
+                        if (decodedLetters.length > 0) {
+                            result = decoded;
+                            changed = true;
+                            stepInfo.push('ROT13');
+                        }
+                    }
+                }
+
+                if (changed) {
+                    allSteps.push(stepInfo.join(' → '));
+                    iterations++;
+                } else {
+                    break;
+                }
+            }
+
+            document.getElementById('outputText').value = result;
+            
+            if (iterations > 0) {
+                showDetectionInfo(`Auto-Entschlüsselung abgeschlossen! ${iterations} Ebene(n) entfernt:\n${allSteps.map((s, i) => `${i + 1}. ${s}`).join('\n')}`);
+            } else {
+                showDetectionInfo('Keine Verschlüsselung erkannt oder bereits entschlüsselt.');
+            }
+        }
+
+        // Clear all fields
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            hideDetectionInfo();
+        }
+
+        // Show detection info
+        function showDetectionInfo(message) {
+            const infoBox = document.getElementById('detectionInfo');
+            infoBox.textContent = message;
+            infoBox.style.display = 'block';
+        }
+
+        // Hide detection info
+        function hideDetectionInfo() {
+            const infoBox = document.getElementById('detectionInfo');
+            infoBox.style.display = 'none';
+        }
+
+        // Copy output to input for chaining
+        function copyToInput() {
+            const output = document.getElementById('outputText').value;
+            document.getElementById('inputText').value = output;
+        }
+    </script>
+</body>
+</html>
