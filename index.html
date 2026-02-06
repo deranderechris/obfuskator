@@ -408,9 +408,14 @@
                 showToast('⚠️ Nothing to copy!', '#ff9800');
                 return;
             }
-            output.select();
-            document.execCommand('copy');
-            showToast('📋 Copied to clipboard!', '#4caf50');
+            navigator.clipboard.writeText(output.value).then(() => {
+                showToast('📋 Copied to clipboard!', '#4caf50');
+            }).catch(() => {
+                // Fallback to older method if clipboard API fails
+                output.select();
+                document.execCommand('copy');
+                showToast('📋 Copied to clipboard!', '#4caf50');
+            });
         }
 
         function caesarCipher(text, shift) {
@@ -436,7 +441,7 @@
         function fromHex(hex) {
             let str = '';
             for (let i = 0; i < hex.length; i += 2) {
-                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+                str += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16));
             }
             return str;
         }
