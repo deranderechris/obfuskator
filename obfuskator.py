@@ -121,7 +121,7 @@ class Obfuskator:
         """
         result = text
         
-        for i in range(iterations):
+        for _ in range(iterations):
             for method_name in methods:
                 if method_name in self.methods:
                     result = self.methods[method_name](result)
