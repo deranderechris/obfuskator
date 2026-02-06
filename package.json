@@ -1,0 +1,16 @@
+{
+  "name": "obfuskator",
+  "version": "1.0.0",
+  "description": "A simple code obfuscator",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "obfuscator",
+    "obfuscation",
+    "code"
+  ],
+  "author": "",
+  "license": "MIT"
+}
