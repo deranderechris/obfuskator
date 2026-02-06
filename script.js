@@ -43,7 +43,10 @@ function obfuscateText(text) {
 // Alternative obfuscation: Base64 encoding
 function obfuscateTextBase64(text) {
     if (!text) return '';
-    return btoa(unescape(encodeURIComponent(text)));
+    // Use TextEncoder for proper UTF-8 encoding instead of deprecated unescape()
+    const bytes = new TextEncoder().encode(text);
+    const binString = String.fromCharCode(...bytes);
+    return btoa(binString);
 }
 
 // Alternative obfuscation: ROT13-like transformation
@@ -134,7 +137,8 @@ copyBtn.addEventListener('click', async () => {
         await navigator.clipboard.writeText(text);
         showNotification('Text in Zwischenablage kopiert! ✓');
     } catch (err) {
-        // Fallback for older browsers
+        // Fallback for older browsers using deprecated document.execCommand
+        // This is kept for legacy browser support
         outputText.select();
         document.execCommand('copy');
         showNotification('Text in Zwischenablage kopiert! ✓');
