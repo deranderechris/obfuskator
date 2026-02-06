@@ -54,12 +54,14 @@ cd obfuskator
 
 **Einfache Verschlüsselung:**
 - Original: `Hallo Welt`
-- ROT13: `Unyyy Jrgg`
+- ROT13: `Unyyb Jryg`
 - Base64: `SGFsbG8gV2VsdA==`
 
-**Mehrfache Verschlüsselung:**
+**Mehrfache Verschlüsselung (ROT13 + Base64 + Marshal):**
 - Original: `Geheimer Text`
-- ROT13 + Base64 + Marshal: `{"type":"marshaled","data":"VHJodnZ6cmVlIEdhaGc=","timestamp":...,"checksum":...}`
+- ROT13: `Trurvzre Grkg`
+- Base64 (von ROT13): `VHJ1cnZ6cmUgR3JrZw==`
+- Marshal (von Base64): `{"type":"marshaled","data":"VHJ1cnZ6cmUgR3JrZw==","timestamp":...,"checksum":...}`
 
 ## 🤝 Beitragen
 

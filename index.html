@@ -238,12 +238,16 @@
 
         // Base64 Encoding/Decoding
         function base64Encode(str) {
-            return btoa(unescape(encodeURIComponent(str)));
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode(parseInt(p1, 16));
+            }));
         }
 
         function base64Decode(str) {
             try {
-                return decodeURIComponent(escape(atob(str)));
+                return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
             } catch (e) {
                 return null;
             }
@@ -475,12 +479,6 @@
         function hideDetectionInfo() {
             const infoBox = document.getElementById('detectionInfo');
             infoBox.style.display = 'none';
-        }
-
-        // Copy output to input for chaining
-        function copyToInput() {
-            const output = document.getElementById('outputText').value;
-            document.getElementById('inputText').value = output;
         }
     </script>
 </body>
