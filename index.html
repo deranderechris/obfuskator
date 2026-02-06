@@ -308,10 +308,9 @@
         }
 
         function isROT13(str) {
-            // ROT13 is harder to detect definitively, but we can check if it produces more readable text
-            const decoded = rot13(str);
-            // Simple heuristic: check if decoded version has more common words or patterns
-            return decoded !== str;
+            // ROT13 detection is difficult since it's symmetric
+            // We simply check if the string contains alphabetic characters that could be ROT13 encoded
+            return str.match(/[a-zA-Z]/) !== null;
         }
 
         // Encrypt text with selected methods
@@ -401,6 +400,8 @@
             let iterations = 0;
             let maxIterations = 100; // Prevent infinite loops
             let allSteps = [];
+            let previousResults = new Set();
+            previousResults.add(result);
 
             while (iterations < maxIterations) {
                 let changed = false;
@@ -409,8 +410,9 @@
                 // Try Marshal first (most specific)
                 if (isMarshal(result)) {
                     const decoded = marshalDecode(result);
-                    if (decoded !== null && decoded !== result) {
+                    if (decoded !== null && decoded !== result && !previousResults.has(decoded)) {
                         result = decoded;
+                        previousResults.add(result);
                         changed = true;
                         stepInfo.push('Marshal');
                     }
@@ -419,26 +421,22 @@
                 // Try Base64
                 if (!changed && isBase64(result)) {
                     const decoded = base64Decode(result);
-                    if (decoded !== null && decoded !== result) {
+                    if (decoded !== null && decoded !== result && !previousResults.has(decoded)) {
                         result = decoded;
+                        previousResults.add(result);
                         changed = true;
                         stepInfo.push('Base64');
                     }
                 }
 
-                // Try ROT13 (least specific, try last)
+                // Try ROT13 (least specific, try last and only once per unique text)
                 if (!changed && result.match(/[a-zA-Z]/)) {
                     const decoded = rot13(result);
-                    if (decoded !== result) {
-                        // Only apply if it seems more readable
-                        const originalLetters = result.match(/[a-zA-Z]/g) || [];
-                        const decodedLetters = decoded.match(/[a-zA-Z]/g) || [];
-                        
-                        if (decodedLetters.length > 0) {
-                            result = decoded;
-                            changed = true;
-                            stepInfo.push('ROT13');
-                        }
+                    if (decoded !== result && !previousResults.has(decoded)) {
+                        result = decoded;
+                        previousResults.add(result);
+                        changed = true;
+                        stepInfo.push('ROT13');
                     }
                 }
 
